@@ -286,20 +286,3 @@ gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bin
 - **Community**: Contributions and feedback welcome!
 
 **Made with ❤️ for the open-source community**
-
-## 🤝 Contributing
-
-Contributions welcome! Areas for improvement:
-- Additional document formats (PPT, HTML, etc.)
-- More embedding models
-- Advanced RAG techniques (reranking, hybrid search)
-- User authentication
-- Document versioning
-
-## 🙏 Acknowledgments
-
-- **Mistral AI** - Mistral-7B model
-- **Hugging Face** - Model hub and transformers library
-- **Chroma** - Vector database
-- **FastAPI** - Backend framework
-- **React** - Frontend framework
