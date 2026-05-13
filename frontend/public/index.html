@@ -1,0 +1,2735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAGKit - Simple RAG Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0f1c;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: #1a1f2e;
+            border-right: 1px solid #2d3748;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .logo-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-left: 52px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+            padding: 0 20px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav-link:hover {
+            background: #374151;
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+                        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a1f2e;
+            border-bottom: 1px solid #2d3748;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .o3-indicator {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            background: #0f172a;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-card h3 {
+            color: #3b82f6;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .status-item {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .status-label {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .status-value {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-card h3 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .content-card p {
+            color: #94a3b8;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f1f5f9;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #0f172a;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        /* Button Styles */
+        .btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            box-shadow: 0 8px 24px rgba(75, 85, 99, 0.3);
+        }
+
+        /* Sample Data Card */
+        .sample-data {
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .sample-data h4 {
+            color: #60a5fa;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .sample-data p {
+            color: #bfdbfe;
+            margin-bottom: 16px;
+        }
+
+        /* Result Container */
+        .result-container {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-container pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        /* Loading and Status Messages */
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid #475569;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #fca5a5;
+            background: #7f1d1d;
+            border: 1px solid #b91c1c;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .success {
+            color: #86efac;
+            background: #14532d;
+            border: 1px solid #16a34a;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 580px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #1e293b;
+            padding: 16px 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-header-text {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-bottom-left-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.assistant strong {
+            color: #60a5fa;
+        }
+
+        .message.user strong {
+            color: #ffffff;
+        }
+
+        .chat-input-area {
+            background: #1e293b;
+            padding: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chat-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid #475569;
+            border-radius: 24px;
+            font-size: 14px;
+            background: #0f172a;
+            color: #ffffff;
+            transition: all 0.2s ease;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .chat-input::placeholder {
+            color: #64748b;
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typingDots 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes typingDots {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Data Browser */
+        .data-browser-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .data-stats {
+            margin-left: auto;
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .data-browser-content {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            background: #1e293b;
+        }
+
+        .meeting-group {
+            border-bottom: 1px solid #334155;
+        }
+
+        .meeting-header {
+            padding: 20px 24px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #ffffff;
+            transition: background 0.2s ease;
+        }
+
+        .meeting-header:hover {
+            background: #334155;
+        }
+
+        .meeting-header .expand-icon {
+            transition: transform 0.2s;
+            color: #94a3b8;
+        }
+
+        .meeting-header.expanded .expand-icon {
+            transform: rotate(90deg);
+        }
+
+        .meeting-content {
+            display: none;
+            background: #0f172a;
+        }
+
+        .meeting-content.expanded {
+            display: block;
+        }
+
+        .document-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .document-item:last-child {
+            border-bottom: none;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .document-text {
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .meta-badge {
+            background: #374151;
+            color: #d1d5db;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .meta-badge.speaker {
+            background: #1e40af;
+            color: #bfdbfe;
+        }
+
+        .meta-badge.confidence {
+            background: #166534;
+            color: #bbf7d0;
+        }
+
+        .meta-badge.chunk {
+            background: #a16207;
+            color: #fef3c7;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Enhanced File Upload Styles */
+        .file-drop-zone {
+            border: 2px dashed #475569;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-drop-zone:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        
+        .file-drop-zone.dragover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .file-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .file-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-name {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        
+        .file-size {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* Enhanced Progress Styles */
+        .progress-container {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .progress-bar-container {
+            background: #374151;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Batch Status Styles */
+        .batch-status-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .status-grid-enhanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .status-item-enhanced {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .status-label-small {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .status-value-enhanced {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Search Specific Styles */
+        .search-example {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-example:hover {
+            background: #1e293b;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .search-result-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: #1e293b;
+            border-color: #3b82f6;
+        }
+
+        .search-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .search-result-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .search-result-text {
+            color: #ffffff;
+            line-height: 1.6;
+            background: #1e293b;
+            border-radius: 4px;
+            padding: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .similarity-score {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .search-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .search-loading svg {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .search-no-results {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .search-no-results svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">K</div>
+                    <div class="logo-text">RAG System</div>
+                </div>
+                <div class="logo-subtitle">Admin Panel</div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-item">
+                    <div class="nav-link active" onclick="switchTab('ingestion')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </span>
+                        <span>Ingestion</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-link" onclick="switchTab('upsert')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                            </svg>
+                        </span>
+                        <span>Upsert</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-link" onclick="switchTab('delete')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"/>
+                                <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
+                        </span>
+                        <span>Delete</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-link" onclick="switchTab('search')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </span>
+                        <span>Search</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-link" onclick="switchTab('chat')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </span>
+                        <span>Chat</span>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-link" onclick="switchTab('data-browser')">
+                        <span class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3h18v18H3zM21 9H3m6-6v18"/>
+                            </svg>
+                        </span>
+                        <span>Data Browser</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h1 class="header-title">Meeting Transcript RAG System</h1>
+                    <p class="header-subtitle">Advanced reasoning capabilities for meeting analysis</p>
+                </div>
+                <div class="o3-indicator">
+                    <span>⚡</span>
+                    <span>o3-mini</span>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- System Status -->
+                <div class="status-card">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                            <path d="M12 20h9"/>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                        System Status
+                    </h3>
+                    <div class="status-grid" id="systemStats">
+                        <div class="status-item">
+                            <div class="status-label">Environment</div>
+                            <div class="status-value" id="envValue">Loading...</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">LLM Model</div>
+                            <div class="status-value" id="llmValue">Loading...</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Vector Store</div>
+                            <div class="status-value" id="vectorValue">Loading...</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Documents</div>
+                            <div class="status-value" id="docValue">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ingestion Tab -->
+                <div id="ingestion" class="tab-content active">
+                    <div class="content-card">
+                        <h3>Bulk Ingestion - Enhanced for Large Scale</h3>
+                        <p>Load multiple meeting transcripts with advanced batch processing, progress monitoring, and error handling.</p>
+                        
+                        <!-- Batch Processing Status -->
+                        <div class="batch-status-card">
+                            <h4 style="color: #3b82f6; margin-bottom: 12px;">Batch Processing Status</h4>
+                            <div class="status-grid-enhanced" id="batchStats">
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">MAX BATCH SIZE</div>
+                                    <div class="status-value-enhanced" id="maxBatchSize">Loading...</div>
+                                </div>
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">MEMORY USAGE</div>
+                                    <div class="status-value-enhanced" id="memoryUsage">Loading...</div>
+                                </div>
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">CPU USAGE</div>
+                                    <div class="status-value-enhanced" id="cpuUsage">Loading...</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sample-data">
+                            <h4>🎯 Sample Data Available</h4>
+                            <p>5 sample meetings covering product planning, engineering, marketing, and sales discussions</p>
+                            <button class="btn" onclick="loadSampleData()">
+                                <span>📋</span>
+                                Load Sample Data
+                            </button>
+                            <button class="btn btn-secondary" onclick="generateBulkTestData()">
+                                <span>🔄</span>
+                                Generate Bulk Test Data (100 meetings)
+                            </button>
+                        </div>
+
+                        <!-- Enhanced File Upload Section -->
+                        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                            <h4 style="color: #ffffff; margin-bottom: 16px;">📁 Upload JSON Files</h4>
+                            <p style="color: #94a3b8; margin-bottom: 16px;">Select multiple JSON files from your local folder. Each file should contain a transcript object or array of transcripts.</p>
+                            
+                            <!-- Drag and Drop Zone -->
+                            <div class="file-drop-zone" id="fileDropZone" style="margin-bottom: 16px;" 
+                                 ondrop="handleFileDrop(event)" 
+                                 ondragover="handleDragOver(event)" 
+                                 ondragleave="handleDragLeave(event)"
+                                 onclick="document.getElementById('jsonFileInput').click()">
+                                <div style="color: #94a3b8; margin-bottom: 8px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px; margin-bottom: 8px;">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Drop JSON files here or click to browse</div>
+                                <div style="color: #94a3b8; font-size: 14px;">Supports multiple file selection</div>
+                            </div>
+                            
+                            <div style="margin-bottom: 16px;">
+                                <input type="file" id="jsonFileInput" multiple accept=".json" style="display: none;" onchange="handleFileSelection()">
+                                <button class="btn btn-secondary" onclick="clearSelectedFiles()" id="clearFilesBtn" style="display: none;">
+                                    <span>🗑️</span>
+                                    Clear Files
+                                </button>
+                            </div>
+                            
+                            <div id="selectedFilesInfo" style="display: none; background: #0f172a; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                                <div style="color: #94a3b8; font-size: 12px; margin-bottom: 8px;">SELECTED FILES</div>
+                                <div id="filesList" style="color: #ffffff; font-size: 14px;"></div>
+                                <div style="color: #94a3b8; font-size: 12px; margin-top: 8px;">
+                                    <span id="filesCount">0 files</span> | 
+                                    <span id="totalFileSize">0 MB total</span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button class="btn" onclick="loadSelectedFiles()" id="loadFilesBtn" style="display: none;">
+                                    <span>⬆️</span>
+                                    Load Files to Editor
+                                </button>
+                                <button class="btn btn-secondary" onclick="previewSelectedFiles()" id="previewFilesBtn" style="display: none;">
+                                    <span>�️</span>
+                                    Preview Files
+                                </button>
+                            </div>
+                            
+                            <div id="filePreview" style="display: none; margin-top: 16px; background: #0f172a; border-radius: 6px; padding: 12px;">
+                                <div style="color: #94a3b8; font-size: 12px; margin-bottom: 8px;">FILE PREVIEW</div>
+                                <div id="filePreviewContent" style="color: #ffffff; font-size: 12px; max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Ingestion Settings -->
+                        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                            <h4 style="color: #ffffff; margin-bottom: 16px;">Ingestion Settings</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Batch Size (transcripts per batch):</label>
+                                    <input type="number" id="batchSize" value="10" min="1" max="50">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Enable Progress Monitoring:</label>
+                                    <select id="enableProgress">
+                                        <option value="true">Yes (Recommended for large batches)</option>
+                                        <option value="false">No (Faster for small batches)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Transcript Data (JSON):</label>
+                            <textarea id="ingestionData" placeholder="Enter JSON array of transcripts..." style="height: 200px;"></textarea>
+                            <div style="color: #94a3b8; font-size: 12px; margin-top: 8px;">
+                                <span id="transcriptCount">0 transcripts</span> | 
+                                <span id="estimatedSize">0 MB estimated</span> | 
+                                <span id="estimatedTime">0s estimated processing time</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn" onclick="ingestTranscripts()">
+                                <span>⚡</span>
+                                Start Ingestion
+                            </button>
+                            <button class="btn btn-secondary" onclick="validateIngestionData()">
+                                <span>✓</span>
+                                Validate Data
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearIngestionData()">
+                                <span>🗑️</span>
+                                Clear Data
+                            </button>
+                        </div>
+
+                        <!-- Enhanced Progress Container -->
+                        <div id="ingestionProgress" class="progress-container" style="display: none;">
+                            <h4 style="color: #3b82f6; margin-bottom: 16px;">Processing Progress</h4>
+                            <div style="background: #1e293b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="color: #e2e8f0;">Overall Progress</span>
+                                    <span style="color: #e2e8f0;" id="progressPercent">0%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div id="progressBar" class="progress-bar"></div>
+                                </div>
+                            </div>
+                            <div class="status-grid-enhanced">
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">CURRENT TRANSCRIPT</div>
+                                    <div class="status-value-enhanced" id="currentTranscript">-</div>
+                                </div>
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">CHUNKS PROCESSED</div>
+                                    <div class="status-value-enhanced" id="chunksProcessed">0</div>
+                                </div>
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">PROCESSING TIME</div>
+                                    <div class="status-value-enhanced" id="processingTime">0s</div>
+                                </div>
+                                <div class="status-item-enhanced">
+                                    <div class="status-label-small">STATUS</div>
+                                    <div class="status-value-enhanced" id="processingStatus">Ready</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="ingestionResult"></div>
+                    </div>
+                </div>
+
+                <!-- Upsert Tab -->
+                <div id="upsert" class="tab-content">
+                    <div class="content-card">
+                        <h3>Upsert Single Transcript</h3>
+                        <p>Add or update a single meeting transcript in the system.</p>
+
+                        <div class="form-group">
+                            <label>Meeting ID:</label>
+                            <input type="text" id="upsertMeetingId" placeholder="e.g., 9288">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category:</label>
+                            <input type="text" id="upsertCategory" placeholder="e.g., product_planning, engineering, marketing, sales">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Transcript Data (JSON):</label>
+                            <textarea id="upsertData" placeholder="Enter aai_response array..."></textarea>
+                        </div>
+
+                        <button class="btn" onclick="upsertTranscript()">
+                            <span>🔄</span>
+                            Upsert Transcript
+                        </button>
+                        <div id="upsertResult"></div>
+                    </div>
+                </div>
+
+                <!-- Delete Tab -->
+                <div id="delete" class="tab-content">
+                    <div class="content-card">
+                        <h3>Delete Transcript</h3>
+                        <p>Remove a meeting transcript from the system permanently.</p>
+
+                        <div class="form-group">
+                            <label>Meeting ID to Delete:</label>
+                            <input type="text" id="deleteMeetingId" placeholder="e.g., 9283">
+                        </div>
+
+                        <button class="btn btn-danger" onclick="deleteTranscript()">
+                            <span>🗑️</span>
+                            Delete Transcript
+                        </button>
+                        <div id="deleteResult"></div>
+                    </div>
+                </div>
+
+                <!-- Search Tab -->
+                <div id="search" class="tab-content">
+                    <div class="content-card">
+                        <h3>🔍 Search Transcripts</h3>
+                        <p>Search through meeting transcripts using semantic similarity. Find relevant content based on meaning, not just keywords.</p>
+
+                        <!-- Search Form -->
+                        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                            <h4 style="color: #ffffff; margin-bottom: 16px;">Search Parameters</h4>
+                            
+                            <div class="form-group">
+                                <label>Search Query:</label>
+                                <textarea id="searchQuery" placeholder="Enter your search query... e.g., 'project timeline and milestones', 'budget discussions', 'technical challenges'" rows="3" style="resize: vertical;"></textarea>
+                                <small style="color: #94a3b8; margin-top: 4px; display: block;">💡 Use natural language - the search understands meaning, not just keywords</small>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Category (Optional):</label>
+                                    <input type="text" id="searchCategory" placeholder="e.g., engineering, marketing">
+                                    <small style="color: #94a3b8; font-size: 12px;">Filter by meeting category</small>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Meeting ID (Optional):</label>
+                                    <input type="text" id="searchMeetingId" placeholder="e.g., meeting_001">
+                                    <small style="color: #94a3b8; font-size: 12px;">Search within specific meeting</small>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Results Limit:</label>
+                                    <input type="number" id="searchTopK" value="10" min="1" max="50">
+                                    <small style="color: #94a3b8; font-size: 12px;">Max results to return</small>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <button class="btn" onclick="performSearch()" id="searchBtn">
+                                    <span>🔍</span>
+                                    Search
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearSearchForm()">
+                                    <span>🧹</span>
+                                    Clear
+                                </button>
+                                <button class="btn btn-secondary" onclick="loadSearchExamples()">
+                                    <span>💡</span>
+                                    Load Examples
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search Results -->
+                        <div id="searchResultsContainer" style="display: none;">
+                            <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                                <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                                    <h4 style="color: #ffffff; margin: 0;">Search Results</h4>
+                                    <div id="searchStats" style="color: #94a3b8; font-size: 14px;"></div>
+                                </div>
+
+                                <!-- Search Summary -->
+                                <div id="searchSummary" style="background: #0f172a; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                                    <div style="color: #94a3b8; font-size: 12px; margin-bottom: 4px;">SEARCH SUMMARY</div>
+                                    <div id="searchSummaryContent" style="color: #ffffff; font-size: 14px;"></div>
+                                </div>
+
+                                <!-- Results List -->
+                                <div id="searchResults"></div>
+
+                                <!-- Pagination -->
+                                <div id="searchPagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 16px;">
+                                    <!-- Pagination buttons will be added here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search Examples -->
+                        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                            <h4 style="color: #ffffff; margin-bottom: 16px;">💡 Search Examples</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
+                                <div class="search-example" onclick="loadExampleSearch('project timeline and upcoming milestones', null, null)">
+                                    <div style="color: #3b82f6; font-weight: 600; margin-bottom: 4px;">Project Planning</div>
+                                    <div style="color: #94a3b8; font-size: 14px;">"project timeline and upcoming milestones"</div>
+                                </div>
+                                <div class="search-example" onclick="loadExampleSearch('budget allocation and financial planning', 'finance', null)">
+                                    <div style="color: #10b981; font-weight: 600; margin-bottom: 4px;">Financial Discussions</div>
+                                    <div style="color: #94a3b8; font-size: 14px;">"budget allocation" in finance category</div>
+                                </div>
+                                <div class="search-example" onclick="loadExampleSearch('technical challenges and implementation issues', 'engineering', null)">
+                                    <div style="color: #f59e0b; font-weight: 600; margin-bottom: 4px;">Technical Issues</div>
+                                    <div style="color: #94a3b8; font-size: 14px;">"technical challenges" in engineering</div>
+                                </div>
+                                <div class="search-example" onclick="loadExampleSearch('team performance and collaboration', null, null)">
+                                    <div style="color: #ef4444; font-weight: 600; margin-bottom: 4px;">Team Dynamics</div>
+                                    <div style="color: #94a3b8; font-size: 14px;">"team performance and collaboration"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Tab -->
+                <div id="chat" class="tab-content">
+                    <div class="content-card">
+                        <h3>AI Chat Interface - o3-mini Reasoning</h3>
+                        <p>Ask questions about your meeting transcripts with advanced reasoning capabilities.</p>
+
+                        <div class="form-group">
+                            <label>Filter by Category (optional):</label>
+                            <input type="text" id="chatCategory" placeholder="e.g., product_planning, engineering, marketing, sales">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Filter by Meeting ID (optional):</label>
+                            <input type="text" id="chatMeetingId" placeholder="e.g., meeting_001, meeting_123">
+                        </div>
+
+                        <div class="chat-container">
+                            <div class="chat-header">
+                                <div class="chat-header-icon">AI</div>
+                                <div class="chat-header-text">o3-mini Assistant</div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="message assistant">
+                                    <strong>o3-mini Assistant:</strong> Hello! I'm powered by OpenAI's o3-mini with advanced reasoning capabilities. I can help you analyze your meeting transcripts with logical reasoning and step-by-step analysis. Ask me anything about your meetings!
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <div class="chat-input-container">
+                                    <div class="chat-input-wrapper">
+                                        <textarea id="chatInput" class="chat-input" placeholder="Ask about your meetings..." onkeypress="handleChatKeyPress(event)" rows="1"></textarea>
+                                    </div>
+                                    <button class="chat-send-btn" onclick="sendChatMessage()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                                            <line x1="22" y1="2" x2="11" y2="13"/>
+                                            <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+                                        </svg>
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Browser Tab -->
+                <div id="data-browser" class="tab-content">
+                    <div class="content-card">
+                        <h3>Vector Store Data Browser</h3>
+                        <p>Browse and explore all documents stored in the vector database.</p>
+
+                        <div class="data-browser-controls">
+                            <button class="btn" onclick="loadAllDocuments()">
+                                <span>🔄</span>
+                                Refresh Data
+                            </button>
+                            <button class="btn btn-secondary" onclick="expandAllDocuments()">
+                                <span>📖</span>
+                                Expand All
+                            </button>
+                            <button class="btn btn-secondary" onclick="collapseAllDocuments()">
+                                <span>📕</span>
+                                Collapse All
+                            </button>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="text" id="meetingIdSearch" placeholder="Search by Meeting ID..." style="padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #0f172a; color: #ffffff; font-size: 14px; width: 200px;">
+                                <button class="btn btn-secondary" onclick="searchByMeetingId()">
+                                    <span>🔍</span>
+                                    Search
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearSearch()" id="clearSearchBtn" style="display: none;">
+                                    <span>✕</span>
+                                    Clear
+                                </button>
+                            </div>
+                            <div class="data-stats" id="dataStats">
+                                <span>Documents: <strong id="documentCount">0</strong></span>
+                                <span>Meetings: <strong id="meetingCount">0</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="data-browser-content" id="dataBrowserContent">
+                            <div class="loading-message">Click "Refresh Data" to load documents from the vector store</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        let currentEnvironment = 'dev';
+        let selectedFiles = []; // Store selected files
+        let ingestionStartTime = null;
+
+        // Sample data
+        const sampleTranscripts = [
+            {
+                "meeting_id": "9283",
+                "category": "product_planning",
+                "aai_response": [
+                    {
+                        "speaker": "Ria Choudhari",
+                        "text": "Let's discuss the product roadmap for Q2. We need to prioritize the user authentication feature and implement SSO for enterprise clients.",
+                        "confidence": 0.95,
+                        "start": 0,
+                        "end": 8.5
+                    },
+                    {
+                        "speaker": "Shubham Gupta",
+                        "text": "I agree with Ria. The authentication system is critical for our enterprise clients. Given the complexity, I'd estimate 6-8 weeks for the full implementation including testing.",
+                        "confidence": 0.92,
+                        "start": 9.0,
+                        "end": 18.2
+                    },
+                    {
+                        "speaker": "Ria Choudhari",
+                        "text": "Perfect. Let's also discuss the mobile app optimization. Users have been complaining about slow load times due to large bundle sizes.",
+                        "confidence": 0.94,
+                        "start": 18.5,
+                        "end": 26.8
+                    },
+                    {
+                        "speaker": "Shubham Gupta",
+                        "text": "The mobile performance issues are mainly due to large bundle sizes. We can implement lazy loading and code splitting to improve performance.",
+                        "confidence": 0.91,
+                        "start": 27.0,
+                        "end": 35.4
+                    }
+                ]
+            },
+            {
+                "meeting_id": "9284",
+                "category": "product_planning",
+                "aai_response": [
+                    {
+                        "speaker": "Alice Johnson",
+                        "text": "The user feedback analysis shows that 73% of users want better search functionality. This should be our top priority for Q2.",
+                        "confidence": 0.97,
+                        "start": 0,
+                        "end": 9.5
+                    },
+                    {
+                        "speaker": "Bob Wilson",
+                        "text": "I've been working on the search algorithm improvements. We can implement elasticsearch for better performance. The monthly cost would be around $200-300.",
+                        "confidence": 0.94,
+                        "start": 10.0,
+                        "end": 19.3
+                    },
+                    {
+                        "speaker": "Alice Johnson",
+                        "text": "Elasticsearch sounds great and the cost is reasonable. Can you prepare a detailed technical spec by Friday?",
+                        "confidence": 0.95,
+                        "start": 19.5,
+                        "end": 28.1
+                    }
+                ]
+            },
+            {
+                "meeting_id": "9285",
+                "category": "engineering",
+                "aai_response": [
+                    {
+                        "speaker": "David Chen",
+                        "text": "We need to address the database performance issues. The query response time has increased by 40% this month due to the user_activity table growing to 50 million records.",
+                        "confidence": 0.98,
+                        "start": 0,
+                        "end": 9.2
+                    },
+                    {
+                        "speaker": "Sarah Kim",
+                        "text": "I've identified the bottleneck. We need proper indexing and should consider database sharding. Adding indexes is straightforward - maybe 2-3 days. Sharding is more complex, probably 2-3 weeks.",
+                        "confidence": 0.96,
+                        "start": 9.5,
+                        "end": 18.7
+                    },
+                    {
+                        "speaker": "David Chen",
+                        "text": "Let's start with the indexes immediately and plan the sharding for next sprint. This will give us quick wins while we prepare for the larger implementation.",
+                        "confidence": 0.94,
+                        "start": 19.0,
+                        "end": 27.8
+                    }
+                ]
+            }
+        ];
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+        }
+
+        function loadSampleData() {
+            document.getElementById('ingestionData').value = JSON.stringify(sampleTranscripts, null, 2);
+            updateIngestionStats();
+        }
+
+        function generateBulkTestData() {
+            const bulkData = [];
+            const speakers = ['Alice Johnson', 'Bob Wilson', 'Carol Smith', 'David Chen', 'Eva Rodriguez'];
+            const categories = ['product_planning', 'engineering', 'marketing', 'sales', 'hr_meeting'];
+            
+            for (let i = 1; i <= 100; i++) {
+                const transcript = {
+                    meeting_id: `bulk_test_${i}`,
+                    category: categories[i % categories.length],
+                    aai_response: []
+                };
+                
+                // Generate 5-10 segments per meeting
+                const segmentCount = 5 + Math.floor(Math.random() * 6);
+                let currentTime = 0;
+                
+                for (let j = 0; j < segmentCount; j++) {
+                    const speaker = speakers[j % speakers.length];
+                    const duration = 5 + Math.random() * 10;
+                    const text = generateRandomMeetingText(speaker, transcript.category);
+                    
+                    transcript.aai_response.push({
+                        speaker: speaker,
+                        text: text,
+                        confidence: 0.85 + Math.random() * 0.15,
+                        start: currentTime,
+                        end: currentTime + duration
+                    });
+                    
+                    currentTime += duration;
+                }
+                
+                bulkData.push(transcript);
+            }
+            
+            document.getElementById('ingestionData').value = JSON.stringify(bulkData, null, 2);
+            updateIngestionStats();
+        }
+        
+        function generateRandomMeetingText(speaker, category) {
+            const templates = {
+                product_planning: [
+                    "We need to prioritize the user experience improvements for Q{quarter}. The current feedback shows {metric}% satisfaction.",
+                    "Let's discuss the roadmap for the new feature set. I estimate {time} weeks for implementation.",
+                    "The competitive analysis shows we're missing key functionality. We should focus on {feature} development."
+                ],
+                engineering: [
+                    "The performance metrics show {metric}% improvement after the latest optimization. We should continue this approach.",
+                    "I've identified a bottleneck in the {component} system. We need to address this in the next sprint.",
+                    "The technical debt is increasing. We should allocate {time} days for refactoring in the upcoming release."
+                ],
+                marketing: [
+                    "The campaign metrics show {metric}% engagement improvement. Let's scale this strategy.",
+                    "We need to adjust our messaging for the {segment} segment. The current conversion rate is {rate}%.",
+                    "The competitive landscape analysis suggests we should focus on {strategy} to differentiate ourselves."
+                ]
+            };
+            
+            const categoryTemplates = templates[category] || templates.product_planning;
+            const template = categoryTemplates[Math.floor(Math.random() * categoryTemplates.length)];
+            
+            return template
+                .replace('{quarter}', Math.ceil(Math.random() * 4))
+                .replace('{metric}', Math.floor(60 + Math.random() * 40))
+                .replace('{time}', Math.floor(2 + Math.random() * 8))
+                .replace('{feature}', ['authentication', 'search', 'analytics', 'reporting'][Math.floor(Math.random() * 4)])
+                .replace('{component}', ['database', 'API', 'frontend', 'cache'][Math.floor(Math.random() * 4)])
+                .replace('{segment}', ['enterprise', 'SMB', 'startup', 'enterprise'][Math.floor(Math.random() * 4)])
+                .replace('{rate}', (2 + Math.random() * 8).toFixed(1))
+                .replace('{strategy}', ['pricing', 'feature differentiation', 'customer service', 'integrations'][Math.floor(Math.random() * 4)]);
+        }
+
+        function updateIngestionStats() {
+            const dataText = document.getElementById('ingestionData').value;
+            let transcriptCount = 0;
+            let estimatedSize = 0;
+            let estimatedTime = 0;
+            
+            if (dataText.trim()) {
+                try {
+                    const data = JSON.parse(dataText);
+                    if (Array.isArray(data)) {
+                        transcriptCount = data.length;
+                        estimatedSize = (new Blob([dataText]).size / (1024 * 1024)).toFixed(2);
+                        estimatedTime = Math.ceil(transcriptCount * 2);
+                    }
+                } catch (e) {
+                    // Invalid JSON
+                }
+            }
+            
+            document.getElementById('transcriptCount').textContent = `${transcriptCount} transcripts`;
+            document.getElementById('estimatedSize').textContent = `${estimatedSize} MB estimated`;
+            document.getElementById('estimatedTime').textContent = `${estimatedTime}s estimated processing time`;
+        }
+
+        function validateIngestionData() {
+            const dataText = document.getElementById('ingestionData').value;
+            if (!dataText.trim()) {
+                showResult('ingestionResult', { error: 'No data to validate' }, true);
+                return;
+            }
+
+            try {
+                const data = JSON.parse(dataText);
+                if (!Array.isArray(data)) {
+                    showResult('ingestionResult', { error: 'Data must be an array of transcripts' }, true);
+                    return;
+                }
+
+                let validCount = 0;
+                let errors = [];
+
+                data.forEach((transcript, index) => {
+                    if (!transcript.meeting_id) {
+                        errors.push(`Transcript ${index + 1}: Missing meeting_id`);
+                    } else if (!transcript.aai_response || !Array.isArray(transcript.aai_response)) {
+                        errors.push(`Transcript ${index + 1}: Missing or invalid aai_response`);
+                    } else {
+                        validCount++;
+                    }
+                });
+
+                const result = {
+                    success: errors.length === 0,
+                    message: `Validation complete: ${validCount}/${data.length} valid transcripts`,
+                    total_transcripts: data.length,
+                    valid_transcripts: validCount,
+                    errors: errors.length > 0 ? errors : undefined
+                };
+
+                showResult('ingestionResult', result, errors.length > 0);
+            } catch (error) {
+                showResult('ingestionResult', { error: `Invalid JSON: ${error.message}` }, true);
+            }
+        }
+
+        function clearIngestionData() {
+            document.getElementById('ingestionData').value = '';
+            document.getElementById('ingestionResult').innerHTML = '';
+            updateIngestionStats();
+        }
+
+        async function loadBatchStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/batch-status`);
+                const data = await response.json();
+                
+                document.getElementById('maxBatchSize').textContent = data.max_transcripts_per_batch || 'N/A';
+                document.getElementById('memoryUsage').textContent = data.system_stats ? `${data.system_stats.memory_usage_percent.toFixed(1)}%` : 'N/A';
+                document.getElementById('cpuUsage').textContent = data.system_stats ? `${data.system_stats.cpu_usage_percent.toFixed(1)}%` : 'N/A';
+                
+            } catch (error) {
+                document.getElementById('maxBatchSize').textContent = 'Error';
+                document.getElementById('memoryUsage').textContent = 'Error';
+                document.getElementById('cpuUsage').textContent = 'Error';
+            }
+        }
+
+        function showResult(elementId, result, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${isError ? 'error' : 'success'}">
+                <pre>${JSON.stringify(result, null, 2)}</pre>
+            </div>`;
+        }
+
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="loading">Processing with o3-mini...</div>';
+        }
+
+        async function loadSystemStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                currentEnvironment = data.environment || 'dev';
+                
+                document.getElementById('envValue').textContent = currentEnvironment.toUpperCase();
+                document.getElementById('llmValue').textContent = data.primary_model || 'o3-mini';
+                document.getElementById('vectorValue').textContent = data.vector_store || 'Not initialized';
+                document.getElementById('docValue').textContent = data.collection_stats?.total_documents || 0;
+                
+            } catch (error) {
+                document.getElementById('envValue').textContent = 'Error';
+                document.getElementById('llmValue').textContent = 'Error';
+                document.getElementById('vectorValue').textContent = 'Error';
+                document.getElementById('docValue').textContent = 'Error';
+            }
+        }
+
+        async function ingestTranscripts() {
+            const dataText = document.getElementById('ingestionData').value;
+            const batchSize = parseInt(document.getElementById('batchSize').value) || 10;
+            const enableProgress = document.getElementById('enableProgress').value === 'true';
+            
+            if (!dataText.trim()) {
+                showResult('ingestionResult', { error: 'Please enter transcript data' }, true);
+                return;
+            }
+
+            try {
+                const transcripts = JSON.parse(dataText);
+                
+                if (!Array.isArray(transcripts)) {
+                    showResult('ingestionResult', { error: 'Data must be an array of transcripts' }, true);
+                    return;
+                }
+
+                // Show progress container
+                if (enableProgress && transcripts.length > 5) {
+                    document.getElementById('ingestionProgress').style.display = 'block';
+                    updateProgress(0, transcripts.length, 'Starting ingestion...', 0, 'Processing');
+                    ingestionStartTime = Date.now();
+                }
+
+                showLoading('ingestionResult');
+
+                const requestBody = {
+                    transcripts: transcripts,
+                    batch_size: batchSize,
+                    enable_progress: enableProgress
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/ingest`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                
+                // Hide progress container
+                if (document.getElementById('ingestionProgress').style.display !== 'none') {
+                    setTimeout(() => {
+                        document.getElementById('ingestionProgress').style.display = 'none';
+                    }, 2000);
+                }
+
+                showResult('ingestionResult', result, !response.ok);
+                
+                if (response.ok) {
+                    loadSystemStats();
+                    loadBatchStats();
+                }
+            } catch (error) {
+                document.getElementById('ingestionProgress').style.display = 'none';
+                showResult('ingestionResult', { error: error.message }, true);
+            }
+        }
+
+        function updateProgress(current, total, currentItem, chunks, status) {
+            const percent = Math.round((current / total) * 100);
+            const elapsed = ingestionStartTime ? Math.round((Date.now() - ingestionStartTime) / 1000) : 0;
+            
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('currentTranscript').textContent = currentItem;
+            document.getElementById('chunksProcessed').textContent = chunks;
+            document.getElementById('processingTime').textContent = `${elapsed}s`;
+            document.getElementById('processingStatus').textContent = status;
+        }
+
+        async function upsertTranscript() {
+            const meetingId = document.getElementById('upsertMeetingId').value;
+            const category = document.getElementById('upsertCategory').value.trim() || 'default';
+            const dataText = document.getElementById('upsertData').value;
+
+            if (!meetingId || !dataText.trim()) {
+                showResult('upsertResult', { error: 'Please enter meeting ID and transcript data' }, true);
+                return;
+            }
+
+            try {
+                const aaiResponse = JSON.parse(dataText);
+                showLoading('upsertResult');
+
+                const transcript = {
+                    meeting_id: meetingId,
+                    category: category,
+                    aai_response: aaiResponse
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/upsert`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ transcript })
+                });
+
+                const result = await response.json();
+                showResult('upsertResult', result, !response.ok);
+                
+                if (response.ok) {
+                    loadSystemStats(); // Refresh stats
+                }
+            } catch (error) {
+                showResult('upsertResult', { error: error.message }, true);
+            }
+        }
+
+        async function deleteTranscript() {
+            const meetingId = document.getElementById('deleteMeetingId').value;
+            
+            if (!meetingId) {
+                showResult('deleteResult', { error: 'Please enter a meeting ID' }, true);
+                return;
+            }
+
+            try {
+                showLoading('deleteResult');
+
+                const response = await fetch(`${API_BASE_URL}/api/delete`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ meeting_id: meetingId })
+                });
+
+                const result = await response.json();
+                showResult('deleteResult', result, !response.ok);
+                
+                if (response.ok) {
+                    loadSystemStats(); // Refresh stats
+                }
+            } catch (error) {
+                showResult('deleteResult', { error: error.message }, true);
+            }
+        }
+
+        function addChatMessage(content, isUser = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `<strong>You:</strong> ${content}`;
+            } else {
+                // Parse markdown-like formatting
+                const formattedContent = content
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = `<strong>o3-mini Assistant:</strong> ${formattedContent}`;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.id = 'loadingMessage';
+            messageDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>o3-mini is analyzing...</div>';
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeLoadingMessage() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+            const category = document.getElementById('chatCategory').value.trim();
+            const meetingId = document.getElementById('chatMeetingId').value.trim();
+
+            if (!query) return;
+
+            // Add user message
+            addChatMessage(query, true);
+            input.value = '';
+
+            // Add loading message
+            addLoadingMessage();
+
+            try {
+                const requestBody = {
+                    query: query,
+                    top_k: 10
+                };
+
+                if (category) {
+                    requestBody.category = category;
+                }
+                
+                if (meetingId) {
+                    requestBody.meeting_id = meetingId;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/retrieve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                removeLoadingMessage();
+
+                if (response.ok) {
+                    addChatMessage(result.answer);
+                } else {
+                    addChatMessage(`Error: ${result.detail || 'Unknown error occurred'}`);
+                }
+            } catch (error) {
+                removeLoadingMessage();
+                addChatMessage(`Error: ${error.message}`);
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function askSampleQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendChatMessage();
+        }
+
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            const textarea = document.getElementById('chatInput');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // Add event listener for textarea auto-resize
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('input', autoResizeTextarea);
+            }
+        });
+
+        // Search Functions
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const category = document.getElementById('searchCategory').value.trim() || null;
+            const meetingId = document.getElementById('searchMeetingId').value.trim() || null;
+            const topK = parseInt(document.getElementById('searchTopK').value) || 10;
+
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const originalText = searchBtn.innerHTML;
+            
+            try {
+                // Show loading state
+                searchBtn.innerHTML = '<span>🔄</span> Searching...';
+                searchBtn.disabled = true;
+                
+                // Show results container
+                document.getElementById('searchResultsContainer').style.display = 'block';
+                
+                // Show loading in results
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="search-loading">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        Searching through transcripts...
+                    </div>
+                `;
+
+                const requestBody = {
+                    query: query,
+                    top_k: topK
+                };
+
+                if (category) requestBody.category = category;
+                if (meetingId) requestBody.meeting_id = meetingId;
+
+                const startTime = Date.now();
+                const response = await fetch(`${API_BASE_URL}/api/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                const searchTime = (Date.now() - startTime) / 1000;
+
+                if (response.ok) {
+                    displaySearchResults(result, searchTime);
+                } else {
+                    throw new Error(result.detail || 'Search failed');
+                }
+            } catch (error) {
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="search-no-results">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <div style="color: #ef4444; font-weight: 600; margin-bottom: 8px;">Search Error</div>
+                        <div>${error.message}</div>
+                    </div>
+                `;
+            } finally {
+                // Reset button state
+                searchBtn.innerHTML = originalText;
+                searchBtn.disabled = false;
+            }
+        }
+
+        function displaySearchResults(result, searchTime) {
+            const resultsDiv = document.getElementById('searchResults');
+            const summaryDiv = document.getElementById('searchSummaryContent');
+            const statsDiv = document.getElementById('searchStats');
+
+            // Update stats
+            statsDiv.textContent = `${result.total_results} results • ${searchTime.toFixed(2)}s`;
+
+            // Update summary
+            const filters = [];
+            if (result.filters_applied.category) filters.push(`Category: ${result.filters_applied.category}`);
+            if (result.filters_applied.meeting_id) filters.push(`Meeting: ${result.filters_applied.meeting_id}`);
+            
+            summaryDiv.innerHTML = `
+                <div style="margin-bottom: 8px;"><strong>Query:</strong> "${result.query}"</div>
+                <div style="margin-bottom: 8px;"><strong>Environment:</strong> ${result.filters_applied.environment}</div>
+                ${filters.length > 0 ? `<div><strong>Filters:</strong> ${filters.join(', ')}</div>` : ''}
+            `;
+
+            if (result.results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="search-no-results">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <div style="color: #94a3b8; font-weight: 600; margin-bottom: 8px;">No Results Found</div>
+                        <div>Try adjusting your search query or removing filters</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Display results
+            let resultsHtml = '';
+            result.results.forEach((item, index) => {
+                const score = (item.similarity_score * 100).toFixed(1);
+                resultsHtml += `
+                    <div class="search-result-item">
+                        <div class="search-result-header">
+                            <div style="color: #3b82f6; font-weight: 600;">Result ${index + 1}</div>
+                            <div class="similarity-score">${score}% match</div>
+                        </div>
+                        <div class="search-result-meta">
+                            <span><strong>Meeting:</strong> ${item.meeting_id}</span>
+                            <span><strong>Speaker:</strong> ${item.speaker}</span>
+                            <span><strong>Category:</strong> ${item.category}</span>
+                            <span><strong>Confidence:</strong> ${(item.confidence * 100).toFixed(1)}%</span>
+                            <span><strong>Chunk:</strong> #${item.chunk_index}</span>
+                        </div>
+                        <div class="search-result-text">
+                            ${highlightSearchTerms(item.text, result.query)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = resultsHtml;
+        }
+
+        function highlightSearchTerms(text, query) {
+            // Simple highlighting - split query into words and highlight each
+            const words = query.toLowerCase().split(/\s+/).filter(word => word.length > 2);
+            let highlightedText = text;
+            
+            words.forEach(word => {
+                const regex = new RegExp(`(${word})`, 'gi');
+                highlightedText = highlightedText.replace(regex, '<mark style="background: #3b82f6; color: white; padding: 2px 4px; border-radius: 2px;">$1</mark>');
+            });
+            
+            return highlightedText;
+        }
+
+        function clearSearchForm() {
+            document.getElementById('searchQuery').value = '';
+            document.getElementById('searchCategory').value = '';
+            document.getElementById('searchMeetingId').value = '';
+            document.getElementById('searchTopK').value = '10';
+            document.getElementById('searchResultsContainer').style.display = 'none';
+        }
+
+        function loadSearchExamples() {
+            const examples = [
+                { query: "project timeline and upcoming milestones", category: "", meetingId: "" },
+                { query: "budget allocation and financial planning", category: "finance", meetingId: "" },
+                { query: "technical challenges and implementation issues", category: "engineering", meetingId: "" },
+                { query: "team performance and collaboration", category: "", meetingId: "" }
+            ];
+            
+            const randomExample = examples[Math.floor(Math.random() * examples.length)];
+            loadExampleSearch(randomExample.query, randomExample.category, randomExample.meetingId);
+        }
+
+        function loadExampleSearch(query, category, meetingId) {
+            document.getElementById('searchQuery').value = query;
+            document.getElementById('searchCategory').value = category || '';
+            document.getElementById('searchMeetingId').value = meetingId || '';
+            
+            // Auto-perform search
+            setTimeout(() => {
+                performSearch();
+            }, 100);
+        }
+
+        // Data Browser Functions
+        let allDocuments = []; // Store all documents for filtering
+        
+        async function loadAllDocuments() {
+            const contentDiv = document.getElementById('dataBrowserContent');
+            const documentCountSpan = document.getElementById('documentCount');
+            const meetingCountSpan = document.getElementById('meetingCount');
+            
+            try {
+                contentDiv.innerHTML = '<div class="loading-message">Loading documents...</div>';
+                
+                const response = await fetch(`${API_BASE_URL}/api/documents`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.detail || 'Failed to load documents');
+                }
+                
+                allDocuments = data.documents || []; // Store all documents
+                
+                // Update stats
+                documentCountSpan.textContent = allDocuments.length;
+                const uniqueMeetings = new Set(allDocuments.map(doc => doc.meeting_id));
+                meetingCountSpan.textContent = uniqueMeetings.size;
+                
+                if (allDocuments.length === 0) {
+                    contentDiv.innerHTML = '<div class="loading-message">No documents found in the vector store</div>';
+                    return;
+                }
+                
+                // Clear any existing search
+                clearSearch();
+                
+                // Render all documents
+                renderDocuments(allDocuments);
+                
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                contentDiv.innerHTML = `<div class="loading-message" style="color: #dc2626;">Error: ${error.message}</div>`;
+            }
+        }
+        
+        function searchByMeetingId() {
+            const searchInput = document.getElementById('meetingIdSearch');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (!searchTerm) {
+                // If search is empty, show all documents
+                renderDocuments(allDocuments);
+                document.getElementById('clearSearchBtn').style.display = 'none';
+                return;
+            }
+            
+            // Filter documents by meeting ID
+            const filteredDocuments = allDocuments.filter(doc => 
+                doc.meeting_id.toLowerCase().includes(searchTerm)
+            );
+            
+            // Update stats for filtered results
+            const documentCountSpan = document.getElementById('documentCount');
+            const meetingCountSpan = document.getElementById('meetingCount');
+            
+            documentCountSpan.textContent = filteredDocuments.length;
+            const uniqueMeetings = new Set(filteredDocuments.map(doc => doc.meeting_id));
+            meetingCountSpan.textContent = uniqueMeetings.size;
+            
+            // Show clear button
+            document.getElementById('clearSearchBtn').style.display = 'inline-flex';
+            
+            // Render filtered documents
+            if (filteredDocuments.length === 0) {
+                document.getElementById('dataBrowserContent').innerHTML = 
+                    `<div class="loading-message">No meetings found matching "${searchTerm}"</div>`;
+            } else {
+                renderDocuments(filteredDocuments);
+            }
+        }
+        
+        function clearSearch() {
+            const searchInput = document.getElementById('meetingIdSearch');
+            searchInput.value = '';
+            
+            // Hide clear button
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            
+            // Restore original stats and documents
+            if (allDocuments.length > 0) {
+                const documentCountSpan = document.getElementById('documentCount');
+                const meetingCountSpan = document.getElementById('meetingCount');
+                
+                documentCountSpan.textContent = allDocuments.length;
+                const uniqueMeetings = new Set(allDocuments.map(doc => doc.meeting_id));
+                meetingCountSpan.textContent = uniqueMeetings.size;
+                
+                renderDocuments(allDocuments);
+            }
+        }
+        
+        function renderDocuments(documents) {
+            if (documents.length === 0) {
+                return;
+            }
+            
+            // Group documents by meeting_id
+            const meetingGroups = {};
+            documents.forEach(doc => {
+                if (!meetingGroups[doc.meeting_id]) {
+                    meetingGroups[doc.meeting_id] = [];
+                }
+                meetingGroups[doc.meeting_id].push(doc);
+            });
+            
+            renderMeetingGroups(meetingGroups);
+        }
+        
+        function renderMeetingGroups(meetingGroups) {
+            const contentDiv = document.getElementById('dataBrowserContent');
+            let html = '';
+            
+            Object.keys(meetingGroups).sort().forEach(meetingId => {
+                const documents = meetingGroups[meetingId];
+                const docCount = documents.length;
+                const categories = [...new Set(documents.map(doc => doc.category))];
+                
+                html += `
+                    <div class="meeting-group">
+                        <div class="meeting-header" onclick="toggleMeetingGroup('${meetingId}')">
+                            <div>
+                                <strong>Meeting ${meetingId}</strong>
+                                <span style="color: #94a3b8; font-weight: normal;">
+                                    (${docCount} documents) - ${categories.join(', ')}
+                                </span>
+                            </div>
+                            <span class="expand-icon">▶</span>
+                        </div>
+                        <div class="meeting-content" id="meeting-${meetingId}">
+                `;
+                
+                documents.forEach((doc, index) => {
+                    html += `
+                        <div class="document-item">
+                            <div class="document-meta">
+                                <span class="meta-badge speaker">Speaker: ${doc.speaker}</span>
+                                <span class="meta-badge confidence">Confidence: ${(doc.confidence * 100).toFixed(1)}%</span>
+                                <span class="meta-badge chunk">Chunk: ${doc.chunk_index}</span>
+                                <span class="meta-badge">Category: ${doc.category}</span>
+                            </div>
+                            <div class="document-text">${doc.text}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            contentDiv.innerHTML = html;
+        }
+        
+        function toggleMeetingGroup(meetingId) {
+            const header = document.querySelector(`[onclick="toggleMeetingGroup('${meetingId}')"]`);
+            const content = document.getElementById(`meeting-${meetingId}`);
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                header.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                header.classList.add('expanded');
+            }
+        }
+        
+        function expandAllDocuments() {
+            const headers = document.querySelectorAll('.meeting-header');
+            const contents = document.querySelectorAll('.meeting-content');
+            
+            headers.forEach(header => header.classList.add('expanded'));
+            contents.forEach(content => content.classList.add('expanded'));
+        }
+        
+        function collapseAllDocuments() {
+            const headers = document.querySelectorAll('.meeting-header');
+            const contents = document.querySelectorAll('.meeting-content');
+            
+            headers.forEach(header => header.classList.remove('expanded'));
+            contents.forEach(content => content.classList.remove('expanded'));
+        }
+
+        // Enhanced File Upload Functions
+        function handleFileSelection() {
+            const fileInput = document.getElementById('jsonFileInput');
+            selectedFiles = Array.from(fileInput.files);
+            
+            if (selectedFiles.length > 0) {
+                updateSelectedFilesDisplay();
+                showFileControls();
+            } else {
+                hideFileControls();
+            }
+        }
+        
+        function updateSelectedFilesDisplay() {
+            const filesListDiv = document.getElementById('filesList');
+            const filesCountSpan = document.getElementById('filesCount');
+            const totalFileSizeSpan = document.getElementById('totalFileSize');
+            
+            // Display file names
+            const fileNames = selectedFiles.map(file => `• ${file.name}`).join('<br>');
+            filesListDiv.innerHTML = fileNames;
+            
+            // Calculate total size
+            const totalSize = selectedFiles.reduce((total, file) => total + file.size, 0);
+            const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+            
+            filesCountSpan.textContent = `${selectedFiles.length} files`;
+            totalFileSizeSpan.textContent = `${totalSizeMB} MB total`;
+            
+            document.getElementById('selectedFilesInfo').style.display = 'block';
+        }
+        
+        function showFileControls() {
+            document.getElementById('clearFilesBtn').style.display = 'inline-flex';
+            document.getElementById('loadFilesBtn').style.display = 'inline-flex';
+            document.getElementById('previewFilesBtn').style.display = 'inline-flex';
+        }
+        
+        function hideFileControls() {
+            document.getElementById('clearFilesBtn').style.display = 'none';
+            document.getElementById('loadFilesBtn').style.display = 'none';
+            document.getElementById('previewFilesBtn').style.display = 'none';
+            document.getElementById('selectedFilesInfo').style.display = 'none';
+            document.getElementById('filePreview').style.display = 'none';
+        }
+        
+        function clearSelectedFiles() {
+            selectedFiles = [];
+            document.getElementById('jsonFileInput').value = '';
+            hideFileControls();
+        }
+        
+        async function loadSelectedFiles() {
+            if (selectedFiles.length === 0) {
+                alert('No files selected');
+                return;
+            }
+            
+            try {
+                const allTranscripts = [];
+                let loadedCount = 0;
+                
+                document.getElementById('loadFilesBtn').innerHTML = '<span>⏳</span> Loading Files...';
+                document.getElementById('loadFilesBtn').disabled = true;
+                
+                for (const file of selectedFiles) {
+                    try {
+                        const fileContent = await readFileAsText(file);
+                        const jsonData = JSON.parse(fileContent);
+                        
+                        if (Array.isArray(jsonData)) {
+                            allTranscripts.push(...jsonData);
+                        } else if (jsonData.meeting_id && jsonData.aai_response) {
+                            allTranscripts.push(jsonData);
+                        } else {
+                            console.warn(`File ${file.name} does not contain valid transcript data`);
+                        }
+                        
+                        loadedCount++;
+                    } catch (error) {
+                        console.error(`Error processing file ${file.name}:`, error);
+                        alert(`Error processing file ${file.name}: ${error.message}`);
+                    }
+                }
+                
+                if (allTranscripts.length > 0) {
+                    document.getElementById('ingestionData').value = JSON.stringify(allTranscripts, null, 2);
+                    updateIngestionStats();
+                    
+                    const successMsg = `Successfully loaded ${allTranscripts.length} transcripts from ${loadedCount} files`;
+                    showResult('ingestionResult', { 
+                        success: true, 
+                        message: successMsg,
+                        files_processed: loadedCount,
+                        total_transcripts: allTranscripts.length
+                    });
+                } else {
+                    alert('No valid transcript data found in the selected files');
+                }
+                
+            } catch (error) {
+                console.error('Error loading files:', error);
+                alert(`Error loading files: ${error.message}`);
+            } finally {
+                document.getElementById('loadFilesBtn').innerHTML = '<span>⬆️</span> Load Files to Editor';
+                document.getElementById('loadFilesBtn').disabled = false;
+            }
+        }
+        
+        async function previewSelectedFiles() {
+            if (selectedFiles.length === 0) {
+                return;
+            }
+            
+            try {
+                let previewContent = '';
+                const maxPreviewFiles = 3;
+                const filesToPreview = selectedFiles.slice(0, maxPreviewFiles);
+                
+                for (const file of filesToPreview) {
+                    try {
+                        const fileContent = await readFileAsText(file);
+                        const jsonData = JSON.parse(fileContent);
+                        
+                        previewContent += `<div style="margin-bottom: 12px;">`;
+                        previewContent += `<div style="color: #3b82f6; font-weight: 600; margin-bottom: 4px;">${file.name}</div>`;
+                        
+                        if (Array.isArray(jsonData)) {
+                            previewContent += `<div style="color: #94a3b8;">Array with ${jsonData.length} items</div>`;
+                            if (jsonData.length > 0) {
+                                previewContent += `<div style="color: #e2e8f0; font-family: monospace; font-size: 11px; margin-top: 4px;">${JSON.stringify(jsonData[0], null, 2).substring(0, 200)}${jsonData[0] && JSON.stringify(jsonData[0]).length > 200 ? '...' : ''}</div>`;
+                            }
+                        } else {
+                            previewContent += `<div style="color: #94a3b8;">Single object</div>`;
+                            previewContent += `<div style="color: #e2e8f0; font-family: monospace; font-size: 11px; margin-top: 4px;">${JSON.stringify(jsonData, null, 2).substring(0, 200)}${JSON.stringify(jsonData).length > 200 ? '...' : ''}</div>`;
+                        }
+                        
+                        previewContent += `</div>`;
+                        
+                    } catch (error) {
+                        previewContent += `<div style="margin-bottom: 12px;">`;
+                        previewContent += `<div style="color: #ef4444; font-weight: 600; margin-bottom: 4px;">${file.name}</div>`;
+                        previewContent += `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+                        previewContent += `</div>`;
+                    }
+                }
+                
+                if (selectedFiles.length > maxPreviewFiles) {
+                    previewContent += `<div style="color: #94a3b8; font-style: italic;">... and ${selectedFiles.length - maxPreviewFiles} more files</div>`;
+                }
+                
+                document.getElementById('filePreviewContent').innerHTML = previewContent;
+                document.getElementById('filePreview').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error previewing files:', error);
+                alert(`Error previewing files: ${error.message}`);
+            }
+        }
+        
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => resolve(event.target.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsText(file);
+            });
+        }
+
+        // Drag and Drop Functions
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('fileDropZone').classList.add('dragover');
+        }
+        
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('fileDropZone').classList.remove('dragover');
+        }
+        
+        function handleFileDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('fileDropZone').classList.remove('dragover');
+            
+            const files = Array.from(event.dataTransfer.files);
+            const jsonFiles = files.filter(file => file.name.toLowerCase().endsWith('.json'));
+            
+            if (jsonFiles.length === 0) {
+                alert('Please drop only JSON files');
+                return;
+            }
+            
+            if (jsonFiles.length !== files.length) {
+                alert(`${files.length - jsonFiles.length} non-JSON files were ignored. Only JSON files are supported.`);
+            }
+            
+            const fileInput = document.getElementById('jsonFileInput');
+            const dataTransfer = new DataTransfer();
+            jsonFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+            
+            selectedFiles = jsonFiles;
+            
+            if (selectedFiles.length > 0) {
+                updateSelectedFilesDisplay();
+                showFileControls();
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStats();
+            loadBatchStats();
+            
+            // Add event listener for file input
+            const fileInput = document.getElementById('jsonFileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileSelection);
+            }
+            
+            // Set up auto-resize for chat input
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('input', autoResizeTextarea);
+            }
+            
+            // Set up auto-update for ingestion stats
+            const ingestionDataTextarea = document.getElementById('ingestionData');
+            if (ingestionDataTextarea) {
+                ingestionDataTextarea.addEventListener('input', updateIngestionStats);
+            }
+            
+            // Initialize stats
+            updateIngestionStats();
+            
+            // Add event listener for search input
+            const searchInput = document.getElementById('meetingIdSearch');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        searchByMeetingId();
+                    }
+                });
+                
+                // Add real-time search as user types (with debounce)
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        if (allDocuments.length > 0) {
+                            searchByMeetingId();
+                        }
+                    }, 300); // Wait 300ms after user stops typing
+                });
+            }
+            
+            // Check if backend is running
+            fetch(`${API_BASE_URL}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Backend health check:', data);
+                    if (data.primary_model) {
+                        console.log(`Using LLM model: ${data.primary_model}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Backend not accessible:', error);
+                    document.body.insertAdjacentHTML('afterbegin', 
+                        '<div class="error" style="margin: 20px; text-align: center;">⚠️ Backend server is not running. Please start the backend server first.</div>'
+                    );
+                });
+        });
+    </script>
+</body>
+</html>

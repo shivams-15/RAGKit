@@ -1,0 +1,27 @@
+# FastAPI and web server
+fastapi
+uvicorn
+python-multipart
+aiofiles
+python-dotenv
+
+# Database and vector store
+chromadb
+sentence-transformers
+
+# Hugging Face and AI models
+transformers
+torch
+accelerate
+
+# Document processing
+PyPDF2
+python-docx
+
+# Data processing
+pydantic
+tiktoken
+numpy
+
+# Utilities
+psutil
